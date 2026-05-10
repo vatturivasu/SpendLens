@@ -26,7 +26,22 @@ type AuditData = {
   total_annual_savings: number
   ai_summary: string
 }
-
+export async function generateMetadata({ params }: { params: { slug: string } }) {
+  return {
+    title: 'My AI Spend Audit — SpendLens',
+    description: 'See how much I could save on AI tools like Cursor, Claude, and ChatGPT.',
+    openGraph: {
+      title: 'My AI Spend Audit — SpendLens',
+      description: 'Free AI spend auditor for startups.',
+      url: `https://spend-lens-weld.vercel.app/results/${params.slug}`,
+    },
+    twitter: {
+      card: 'summary',
+      title: 'My AI Spend Audit — SpendLens',
+      description: 'Free AI spend auditor for startups.',
+    },
+  }
+}
 export default function ResultsPage() {
   const params = useParams()
   const slug = params.slug as string
