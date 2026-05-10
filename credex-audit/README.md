@@ -1,36 +1,63 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SpendLens
 
-## Getting Started
+Free AI spend auditor for startups. Find out in 2 minutes if you're overpaying
+for Cursor, Claude, ChatGPT, GitHub Copilot, and more.
 
-First, run the development server:
+Built as a lead-generation tool for [Credex](https://credex.rocks) — discounted
+AI infrastructure credits for startups.
+
+## Live URL
+
+https://spend-lens-weld.vercel.app
+
+## Screenshots
+
+> Add 3 screenshots here after deployment:
+> 1. Landing page
+> 2. Audit form filled in
+> 3. Results page showing savings
+
+## Quick start
 
 ```bash
+git clone https://github.com/vatturivasu/SpendLens.git
+cd SpendLens
+npm install
+cp .env.example .env.local   # fill in your keys
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment variables
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+RESEND_API_KEY=
+ANTHROPIC_API_KEY=
+NEXT_PUBLIC_APP_URL=
+## Running tests
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm test
+```
 
-## Learn More
+## Decisions
 
-To learn more about Next.js, take a look at the following resources:
+1. **Hardcoded rules over AI for the audit engine** — The assignment explicitly
+   says "knowing when not to use AI is part of the test." A rules-based engine
+   is more defensible, auditable, and cheaper to run than asking an LLM to do math.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+2. **Next.js App Router over Pages Router** — App Router allows server components
+   for the landing page (better SEO, faster first paint) while keeping client
+   components for the interactive form and results page.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. **Supabase over Firebase** — Postgres gives us proper relational queries and
+   a SQL editor for debugging. Firebase's NoSQL model would make the audit→lead
+   join awkward.
 
-## Deploy on Vercel
+4. **Resend over SES** — SES requires domain verification and IAM setup that would
+   eat a full day. Resend works in 10 minutes on a free tier with a simple API.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+5. **nanoid slug over UUID in URL** — Short 10-character slugs
+   (e.g. /results/abc123xyz) are cleaner for sharing than full UUIDs. Still
+   collision-resistant at our scale.
